@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Azure Maps</title>
-    <script src="https://atlas.microsoft.com/sdk/js/atlas.min.js?api-version=2.0"></script>
+    <title>Google Maps Elevation</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAODcFlJ61J2dRilWuS3JSt7-maLz2Qxvc"></script>
     <style>
         #myMap {
             position: relative;
@@ -15,36 +15,47 @@
 <body>
     <div id="myMap"></div>
     <script>
-        var subscriptionKey = 'ApnljqbcFXj5OrLB65q0YF6h7UWJysB7wGcKp8ZtuxvlR3rsPeMyJQQJ99BDACi5Ypz9LF8oAAAgAZMP1icD';
+        var map;
+        var elevator;
 
-        // Initialize the map
-        var map = new atlas.Map('myMap', {
-            center: [-122.33, 47.6],
-            zoom: 12,
-            view: 'Auto',
-            authOptions: {
-                authType: 'subscriptionKey',
-                subscriptionKey: subscriptionKey
-            }
-        });
+        function initMap() {
+            // Initialize the map
+            map = new google.maps.Map(document.getElementById('myMap'), {
+                center: { lat: 47.6, lng: -122.33 },
+                zoom: 12
+            });
 
-        // Add a click event to the map
-        map.events.add('click', function (e) {
-            var position = e.position;
-            getElevation(position);
-        });
+            // Initialize the Elevation service
+            elevator = new google.maps.ElevationService();
 
-        function getElevation(position) {
-            var url = 'https://atlas.microsoft.com/elevation/point/json?api-version=1.0&subscription-key=' + subscriptionKey + '&points=' + position[1] + ',' + position[0];
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    var elevation = data.elevationData.elevations[0].elevationInMeters;
-                    alert('Elevation: ' + elevation + ' meters');
-                });
+            // Add a click event to the map
+            map.addListener('click', function (e) {
+                getElevation(e.latLng);
+            });
         }
 
+        function getElevation(location) {
+            var locations = [location];
+            var positionalRequest = {
+                locations: locations
+            };
 
+            elevator.getElevationForLocations(positionalRequest, function (results, status) {
+                if (status === google.maps.ElevationStatus.OK) {
+                    if (results[0]) {
+                        var elevation = results[0].elevation;
+                        alert('Elevation: ' + elevation + ' meters');
+                    } else {
+                        alert('No elevation data found for the clicked location.');
+                    }
+                } else {
+                    alert('Elevation service failed due to: ' + status);
+                }
+            });
+        }
+
+        // Load the map once the page has loaded
+        window.onload = initMap;
     </script>
 </body>
 </html>
