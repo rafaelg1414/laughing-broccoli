@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Google Maps Elevation</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAODcFlJ61J2dRilWuS3JSt7-maLz2Qxvc"></script>
+    <title>Google Maps Elevation and Distance to Sea</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAODcFlJ61J2dRilWuS3JSt7-maLz2Qxvc></script>
     <style>
         #myMap {
             position: relative;
@@ -17,6 +17,7 @@
     <script>
         var map;
         var elevator;
+        var seaPoint = { lat: 47.6, lng: -122.5 }; // Example point in the sea off the coast of Seattle
 
         function initMap() {
             // Initialize the map
@@ -30,7 +31,10 @@
 
             // Add a click event to the map
             map.addListener('click', function (e) {
-                getElevation(e.latLng);
+                var location = e.latLng;
+                getElevation(location);
+                var distance = calculateDistance(location, seaPoint);
+                alert('Distance to sea: ' + distance.toFixed(2) + ' km');
             });
         }
 
@@ -54,8 +58,27 @@
             });
         }
 
+        function calculateDistance(point1, point2) {
+            var R = 6371; // Radius of the Earth in km
+            var dLat = toRad(point2.lat - point1.lat());
+            var dLng = toRad(point2.lng - point1.lng());
+            var lat1 = toRad(point1.lat());
+            var lat2 = toRad(point2.lat);
+
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var distance = R * c;
+            return distance;
+        }
+
+        function toRad(value) {
+            return value * Math.PI / 180;
+        }
+
         // Load the map once the page has loaded
         window.onload = initMap;
     </script>
 </body>
 </html>
+
