@@ -1,0 +1,19 @@
+{
+  "name": "vite-project",
+  "version": "1.0.0",
+  "description": "Point in Polygon on Google Maps with Vite",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "clean": "rm -rf node_modules/.vite"
+  },
+  "keywords": [],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "vite": "^4.0.0"
+  }
+}
