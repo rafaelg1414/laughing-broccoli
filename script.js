@@ -101,6 +101,7 @@ function initMap() {
     loadCoastlineGeoJSON1();
     loadCoastlineGeoJSON2();
      loadCoastlineGeoJSON3();
+     loadCoastlineGeoJSON4();
 
     setupInputListeners(); // Call to set up input listeners
     // calculateQp(); // Remove initial calculation here, as elevation is undefined
@@ -245,6 +246,25 @@ async function loadCoastlineGeoJSON3() {
         const geojsonData3 = await response3.json();
         console.log("Coastline3 GeoJSON loaded:", geojsonData3);
         drawCoastline(geojsonData3);
+
+    } catch (error) {
+        console.error("Failed to load GeoJSON coastline3:", error);
+        const messageBox = document.getElementById('message-box');
+        messageBox.textContent = `Error loading coastline data: ${error.message}`;
+        messageBox.style.backgroundColor = 'rgba(255, 99, 71, 0.8)';
+        messageBox.classList.add('show');
+        setTimeout(() => { messageBox.classList.remove('show'); }, 5000);
+    }
+}
+async function loadCoastlineGeoJSON4() {
+    try {
+        const response4 = await fetch('britain_coastline4.geojson');
+        if (!response4.ok) {
+            throw new Error(`HTTP error! status: ${response4.status} - Could not load britain_coastline4.geojson`);
+        }
+        const geojsonData4 = await response4.json();
+        console.log("Coastline4 GeoJSON loaded:", geojsonData4);
+        drawCoastline(geojsonData4);
 
     } catch (error) {
         console.error("Failed to load GeoJSON coastline3:", error);
