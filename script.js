@@ -100,7 +100,8 @@ function initMap() {
 
     loadCoastlineGeoJSON1();
     loadCoastlineGeoJSON2();
- 
+     loadCoastlineGeoJSON3();
+
     setupInputListeners(); // Call to set up input listeners
     // calculateQp(); // Remove initial calculation here, as elevation is undefined
 }
@@ -217,11 +218,11 @@ async function loadCoastlineGeoJSON1() {
 }
 async function loadCoastlineGeoJSON2() {
     try {
-        const response = await fetch('britain_coastline2.geojson');
-        if (!response.ok) {
+        const response2 = await fetch('britain_coastline2.geojson');
+        if (!response2.ok) {
             throw new Error(`HTTP error! status: ${response.status} - Could not load britain_coastline2.geojson`);
         }
-        const geojsonData2 = await response.json();
+        const geojsonData2 = await response2.json();
         console.log("Coastline2 GeoJSON loaded:", geojsonData2);
         drawCoastline(geojsonData2);
 
@@ -235,6 +236,25 @@ async function loadCoastlineGeoJSON2() {
     }
 }
 
+async function loadCoastlineGeoJSON3() {
+    try {
+        const response3 = await fetch('britain_coastline3.geojson');
+        if (!response3.ok) {
+            throw new Error(`HTTP error! status: ${response3.status} - Could not load britain_coastline3.geojson`);
+        }
+        const geojsonData3 = await response3.json();
+        console.log("Coastline3 GeoJSON loaded:", geojsonData3);
+        drawCoastline(geojsonData3);
+
+    } catch (error) {
+        console.error("Failed to load GeoJSON coastline3:", error);
+        const messageBox = document.getElementById('message-box');
+        messageBox.textContent = `Error loading coastline data: ${error.message}`;
+        messageBox.style.backgroundColor = 'rgba(255, 99, 71, 0.8)';
+        messageBox.classList.add('show');
+        setTimeout(() => { messageBox.classList.remove('show'); }, 5000);
+    }
+}
 // Ensure this function is called when your map is ready
 // e.g., inside your initMap function or when the map is initialized
 // loadCoastlineGeoJSON(map);
