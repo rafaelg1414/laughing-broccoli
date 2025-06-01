@@ -98,7 +98,9 @@ function initMap() {
         handleMapClick(mapsMouseEvent.latLng);
     });
 
-    loadCoastlineGeoJSON();
+    loadCoastlineGeoJSON1();
+    loadCoastlineGeoJSON2();
+ 
     setupInputListeners(); // Call to set up input listeners
     // calculateQp(); // Remove initial calculation here, as elevation is undefined
 }
@@ -194,15 +196,15 @@ function handleMapClick(clickedLatLng) {
     );
 }
 
-async function loadCoastlineGeoJSON() {
+async function loadCoastlineGeoJSON1() {
     try {
-        const response = await fetch('britain_coastline.geojson');
+        const response = await fetch('britain_coastline1.geojson');
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} - Could not load britain_coastline.geojson`);
+            throw new Error(`HTTP error! status: ${response.status} - Could not load britain_coastline1.geojson`);
         }
-        const geojsonData = await response.json();
-        console.log("Coastline GeoJSON loaded:", geojsonData);
-        drawCoastline(geojsonData);
+        const geojsonData1 = await response.json();
+        console.log("Coastline1 GeoJSON loaded:", geojsonData1);
+        drawCoastline(geojsonData1);
 
     } catch (error) {
         console.error("Failed to load GeoJSON coastline:", error);
@@ -213,6 +215,29 @@ async function loadCoastlineGeoJSON() {
         setTimeout(() => { messageBox.classList.remove('show'); }, 5000);
     }
 }
+async function loadCoastlineGeoJSON2() {
+    try {
+        const response = await fetch('britain_coastline2.geojson');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} - Could not load britain_coastline2.geojson`);
+        }
+        const geojsonData2 = await response.json();
+        console.log("Coastline2 GeoJSON loaded:", geojsonData2);
+        drawCoastline(geojsonData2);
+
+    } catch (error) {
+        console.error("Failed to load GeoJSON coastline:", error);
+        const messageBox = document.getElementById('message-box');
+        messageBox.textContent = `Error loading coastline data: ${error.message}`;
+        messageBox.style.backgroundColor = 'rgba(255, 99, 71, 0.8)';
+        messageBox.classList.add('show');
+        setTimeout(() => { messageBox.classList.remove('show'); }, 5000);
+    }
+}
+
+// Ensure this function is called when your map is ready
+// e.g., inside your initMap function or when the map is initialized
+// loadCoastlineGeoJSON(map);
 
 function drawCoastline(geojsonData) {
     coastlinePolylines.forEach(polyline => polyline.setMap(null));
