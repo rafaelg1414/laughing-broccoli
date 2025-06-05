@@ -97,28 +97,24 @@ function interpolateValues(effectiveHeightZ, closestDistanceToSea) {
 // --- Define your coordinates based on the table headers ---
 // Make sure these are also global (e.g., in coords.js or defined before this function)
 window.effective_height_z_coords = [2, 5, 10, 15, 20, 30, 40, 50]; // Numerical representation of <=2, 5, 10, etc.
-window.closest_distance_to_sea_coords = [0.1, 2, 10, 100]; // Numerical representation of <0.1, 2, 10, >=100
+window.closest_distance_to_sea_coords = [0.1, 2, 10, 100,1000]; // Numerical representation of <0.1, 2, 10, >=100
 
 // --- Your complete table data ---
 window.table_data = [
     // Effective Height z <=2 (row 0)
-    [1.9, 1.6, 1.5, 1.4],
+    [1.9, 1.6, 1.5, 1.4,1.4],
     // Effective Height z 5 (row 1)
-    [2.43, 2.18, 2.05,1.9],
+    [2.43, 2.18, 2.05,1.9,1.9],
     // Effective Height z 10 (row 2)
-    [2.82,2.65,2.5,2.32],
+    [2.82,2.65,2.5,2.32,2.32],
     // Effective Height z 15 (row 3)
-    [3.07,3.02,2.85,2.67],
+    [3.07,3.02,2.85,2.67,2.67],
     // Effective Height z 20 (row 4)
-    [3.2,3.15,2.98,2.78],
+    [3.2,3.15,2.98,2.78,2.78],
     // Effective Height z 30 (row 5)
-    [3.42,3.43,3.27,3.04],
+    [3.42,3.43,3.27,3.04,3.04],
     // Effective Height z 40 (row 6)
-    [3.55,3.56,3.45,3.22],
+    [3.55,3.56,3.45,3.22,3.22],
     // Effective Height z 50 (row 7)
-    [3.68,3.68,3.62,3.39]
+    [3.68,3.68,3.62,3.39,3.39]
 ];
-
-// --- Example Usage (assuming this code is in interpolationUtils.js or loaded before script.js) ---
-// Now you can call it like this:
-// const result = interpolateValues(h_val, distance_from_sea_val);

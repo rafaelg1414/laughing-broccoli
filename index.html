@@ -3,6 +3,7 @@
 <head>
     <title>Google Maps: Elevation Water Check & Calculations</title>
     <style>
+        /* Your CSS here, no changes needed */
         html,
         body {
             height: 100%;
@@ -120,7 +121,13 @@
             </div>
 
             <div id="qp-output-container">
-                Peak Velocity Pressure, qp: <span id="qp_output">0</span>
+                <h3>Calculated Values:</h3>
+                <p>Peak Velocity Pressure, qp: <span id="qp_output">0</span> </p>
+                <p>Vbmap: <span id="vbmap_output">N/A</span> </p>
+                <p>Altitude: <span id="altitude_output">N/A</span> </p>
+                <p>Basic Velocity Pressure, qb: <span id="qb_output">N/A</span> </p>
+                <p>Shortest distance to sea: <span id="shortest_distance_output">N/A</span></p>
+                <p>Cez: <span id="cez_output">N/A</span></p>
             </div>
         </div>
 
@@ -129,9 +136,9 @@
             <div id="message-box">Click on the map to interact!</div>
         </div>
     </div>
+
     <script src="./countryInterpolation.js"></script>
     <script src="./coords.js"></script>
-
     <script src="./script.js"></script>
 
     <script async defer
