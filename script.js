@@ -607,8 +607,6 @@ function drawCoastline(geojsonData) {
     // This clears existing polylines. If you intend to draw all four sets and keep them,
     // you would adjust this logic to *not* clear, but instead add to the array.
     // For now, it will clear previous if loadCoastlineGeoJSON is called multiple times.
-    coastlinePolylines.forEach(polyline => polyline.setMap(null));
-    coastlinePolylines = [];
     console.log("Drawing coastline segments..."); // Diagnostic Log
 
     geojsonData.features.forEach(feature => {
