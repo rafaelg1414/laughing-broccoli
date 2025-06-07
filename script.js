@@ -27,8 +27,8 @@ let coastlinePolylines = [];
 let vbmap;
 let elevation;
 let shortestDistance; // This is in meters
-let qb_val = 0;   // Added global for basic velocity
-let cez_val = 0;  // Added global for cez
+let qb_val = 0;   // Added global for basic velocity
+let cez_val = 0;  // Added global for cez
 const ro = 1.226;
 
 // Variables for calculation inputs
@@ -50,15 +50,15 @@ function initMap() {
     }
 
     const ukIrelandBounds = {
-        north: 60.0,    // North of Scotland
-        south: 49.0,    // South of England
-        west: -12.0,    // West of Ireland
-        east: 3.0      // East of England
+        north: 60.0,// North of Scotland
+        south: 49.0,// South of England
+        west: -12.0,// West of Ireland
+        east: 3.0// East of England
     };
 
     map = new google.maps.Map(mapDiv, {
         center: { lat: 54.5, lng: -4.0 }, // Centered on a point within UK/Ireland
-        zoom: 6,                        // A good zoom level to show both UK and Ireland
+        zoom: 6,                        // A good zoom level to show both UK and Ireland
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         restriction: {
             latLngBounds: ukIrelandBounds,
@@ -69,6 +69,57 @@ function initMap() {
 
     elevationService = new google.maps.ElevationService();
     console.log("ElevationService initialized."); // Diagnostic Log
+
+    // --- Places Autocomplete Implementation ---
+    const input = document.getElementById('pac-input');
+    console.log(input);
+    // Ensure the input element exists
+    if (input) {
+        const searchBox = new google.maps.places.SearchBox(input, {
+            componentRestrictions: {
+                country: ["uk", "ie"]
+            } // Restrict search to UK and Ireland
+        });
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', () => {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        // Listen for the event fired when the user selects a prediction.
+        searchBox.addListener('places_changed', () => {
+            const places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                console.log("No places found for search query.");
+                return;
+            }
+
+            const place = places[0]; // Get the first (most relevant) result
+            if (!place.geometry || !place.geometry.location) {
+                console.log("Returned place contains no geometry");
+                return;
+            }
+
+            // Pan and zoom the map to the selected location
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(12); // A reasonable zoom level for a specific location
+            }
+
+            // Call handleMapClick to perform all calculations for the searched location
+            handleMapClick(place.geometry.location);
+
+            // Clear the search input after a selection
+            input.value = place.name; // You can also clear it fully by setting to ''
+        });
+    } else {
+        console.error("Search input element with ID 'pac-input' not found.");
+    }
+    // --- End Places Autocomplete Implementation ---
+
 
     // Access globally exposed polygon data (from coords.js)
     mainPolygon21_5 = new google.maps.Polygon({
@@ -440,7 +491,7 @@ function calculateQp() {
     console.log("qb_val is " + qb_val);
 
     console.log("shortest distance to sea (m) is " + shortestDistance);
-    console.log("hval is "+h_val);
+    console.log("hval is " + h_val);
 
     // Ensure shortestDistance is a valid number before using in interpolateValues
     const shortestDistanceKm = shortestDistance !== Infinity ? shortestDistance / 1000 : 0;
@@ -604,9 +655,7 @@ async function loadCoastlineGeoJSON4() {
 }
 
 function drawCoastline(geojsonData) {
-    // This clears existing polylines. If you intend to draw all four sets and keep them,
-    // you would adjust this logic to *not* clear, but instead add to the array.
-    // For now, it will clear previous if loadCoastlineGeoJSON is called multiple times.
+    // This function now *adds* to the coastlinePolylines array instead of clearing it.
     console.log("Drawing coastline segments..."); // Diagnostic Log
 
     geojsonData.features.forEach(feature => {
@@ -679,7 +728,7 @@ function drawCoastline(geojsonData) {
             });
         }
     });
-    console.log("Coastline segments drawn."); // Diagnostic Log
+    console.log("Coastline segments drawn. Total segments:", coastlinePolylines.length); // Diagnostic Log
 }
 
 function dropPinAndGetInfo(clickedLatLng) {
@@ -705,6 +754,13 @@ function dropPinAndGetInfo(clickedLatLng) {
         animation: google.maps.Animation.DROP
     });
     console.log("Marker created and set on map."); // Diagnostic Log
+
+    // Add a drag listener to the newly created marker
+    clickedMarker.addListener('dragend', (event) => {
+        console.log("Marker dragged to new location:", event.latLng.lat(), event.latLng.lng());
+        handleMapClick(event.latLng); // Recalculate everything for the new position
+    });
+
 
     shortestDistance = Infinity; // Ensure shortestDistance is reset
     let closestPoint = null;
@@ -837,28 +893,28 @@ function dropPinAndGetInfo(clickedLatLng) {
         backgroundColor = 'rgba(255, 215, 0, 0.8)'; // Gold
         console.log("Clicked inside Polygon 31"); // Diagnostic Log
     }
-
     else {
-        vbmap = undefined; // Set to undefined if outside all polygons
-        combinedMessage = "Polygon: Outside Defined Zones";
-        backgroundColor = 'rgba(255, 255, 255, 0.9)'; // Default
-        console.log("Clicked outside any specific polygon zone."); // Diagnostic Log
+        vbmap = undefined; // No valid Vbmap zone found
+        combinedMessage = "Vbmap: Not in a defined zone";
+        backgroundColor = 'rgba(255, 99, 71, 0.8)'; // Red
+        console.log("Clicked outside any defined Vbmap polygons."); // Diagnostic Log
     }
 
-    // Always call calculateQp to ensure all related values are updated
-    calculateQp();
-    
-    // The message box combines text and elevation from the initial elevation service call
-    combinedMessage += ` | Elevation: ${elevation !== undefined ? elevation.toFixed(2) : 'N/A'}m`;
-    console.log(`Final message for display: ${combinedMessage}`); // Diagnostic Log
-
-    messageBox.textContent = combinedMessage + distanceMessage;
+    messageBox.textContent = `Location: ${clickedLatLng.lat().toFixed(4)}, ${clickedLatLng.lng().toFixed(4)} | Elevation: ${elevation.toFixed(2)} m ${combinedMessage} ${distanceMessage}`;
     messageBox.style.backgroundColor = backgroundColor;
-    console.log("Message box text and background updated."); // Diagnostic Log
+    setTimeout(() => { messageBox.classList.remove('show'); }, 5000);
+    console.log("Message box updated with all data."); // Diagnostic Log
 
-    setTimeout(() => {
-        messageBox.classList.remove('show');
-        console.log("Message box hidden after timeout."); // Diagnostic Log
-    }, 5000);
+
+    // Trigger calculation only if Vbmap is defined (i.e., within a valid zone)
+    if (vbmap !== undefined) {
+        calculateQp();
+    } else {
+        // If Vbmap is not defined, ensure calculation outputs are reset
+        qp_val = undefined;
+        qb_val = undefined;
+        cez_val = undefined;
+        updateDisplayedValues();
+    }
     console.log("dropPinAndGetInfo function finished."); // Diagnostic Log
 }
