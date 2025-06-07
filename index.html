@@ -3,7 +3,7 @@
 <head>
     <title>Google Maps: Elevation Water Check & Calculations</title>
     <style>
-        /* Your CSS here, no changes needed */
+        /* Your existing CSS */
         html,
         body {
             height: 100%;
@@ -31,6 +31,7 @@
         .right-panel {
             flex: 2; /* Takes 2 parts of the available space, making it wider */
             height: 100%;
+            position: relative; /* Needed for absolute positioning of search bar */
         }
 
         #map {
@@ -49,7 +50,6 @@
             font-weight: bold;
             color: #333;
         }
-
         .input-group input[type="number"] {
             width: calc(100% - 22px); /* Adjust for padding and border */
             padding: 10px;
@@ -93,7 +93,78 @@
         #message-box.show {
             opacity: 1;
         }
+
+        /* --- CORRECTED CSS for Search Bar --- */
+        #pac-container {
+            margin: 10px;
+            background-color: #fff;
+            border-radius: 2px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            position: absolute; /* Position it on top of the map */
+            top: 10px; /* Adjust as needed */
+            left: 10px;
+            z-index: 11; /* Ensure it's above message-box (which is z-index: 10) */
+            width: auto; /* Allow content to define width, or set fixed width */
+            min-width: 300px; /* Ensure a minimum width */
+            padding: 0; /* Remove padding here, add to input */
+        }
+
+        #pac-input {
+            box-sizing: border-box; /* Include padding and border in the element's total width */
+            border: 1px solid transparent;
+            width: 100%; /* Take full width of its container */
+            height: 36px; /* Standard height for inputs */
+            padding: 10px 12px; /* Sufficient padding */
+            border-radius: 2px;
+            font-size: 15px;
+            outline: none; /* Remove default focus outline */
+            text-overflow: ellipsis; /* Handle long text */
+        }
+
+        #pac-input:focus {
+            border-color: #4d90fe; /* Blue border on focus */
+        }
+
+        /* Google Places Autocomplete dropdown styling (important for visibility) */
+        .pac-container {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            z-index: 1000; /* Ensure dropdown is on top */
+            position: absolute !important; /* Override inline styles */
+        }
+
+        .pac-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pac-item:last-child {
+            border-bottom: none;
+        }
+
+        .pac-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .pac-icon {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .pac-item-query {
+            font-weight: bold;
+        }
     </style>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
 </head>
 <body>
     <div class="container">
@@ -132,6 +203,9 @@
         </div>
 
         <div class="right-panel">
+            <div id="pac-container">
+                <input id="pac-input" type="text" placeholder="Search for a location...">
+            </div>
             <div id="map"></div>
             <div id="message-box">Click on the map to interact!</div>
         </div>
@@ -142,7 +216,7 @@
     <script src="./script.js"></script>
 
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAODcFlJ61J2dRilWuS3JSt7-maLz2Qxvc&callback=initMap&libraries=geometry">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAODcFlJ61J2dRilWuS3JSt7-maLz2Qxvc&callback=initMap&libraries=geometry,places">
     </script>
 </body>
 </html>
